@@ -3,17 +3,20 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Servlet Filter implementation class LoginFilter
  */
 @WebFilter(filterName = "LoginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
+    private final ArrayList<String> allowedURIs = new ArrayList<>();
 
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -34,27 +37,24 @@ public class LoginFilter implements Filter {
         }
     }
 
-    // Setup your own rules here to allow accessing some resources without logging in
-    // Always allow your own login related requests(html, js, servlet, etc..)
-    // You might also want to allow some CSS files, etc..
     private boolean isUrlAllowedWithoutLogin(String requestURI) {
-        requestURI = requestURI.toLowerCase();
-
-        return requestURI.endsWith("login.html") || requestURI.endsWith("login.js")
-                || requestURI.endsWith("api/login");
+        /*
+         Setup your own rules here to allow accessing some resources without logging in
+         Always allow your own login related requests(html, js, servlet, etc..)
+         You might also want to allow some CSS files, etc..
+         */
+        return allowedURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
     }
 
-    /**
-     * We need to have these function because this class implements Filter.
-     * But we don’t need to put any code in them.
-     *
-     * @see Filter#init(FilterConfig)
-     */
 
     public void init(FilterConfig fConfig) {
+        allowedURIs.add("login.html");
+        allowedURIs.add("login.js");
+        allowedURIs.add("api/login");
     }
 
     public void destroy() {
+        // ignored.
     }
 
 

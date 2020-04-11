@@ -6,12 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
 public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
-
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
@@ -22,27 +18,27 @@ public class LoginServlet extends HttpServlet {
         /* This example only allows username/password to be test/test
         /  in the real project, you should talk to the database to verify username/password
         */
+        JsonObject responseJsonObject = new JsonObject();
         if (username.equals("anteater") && password.equals("123456")) {
             // Login success:
 
             // set this user into the session
             request.getSession().setAttribute("user", new User(username));
 
-            JsonObject responseJsonObject = new JsonObject();
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "success");
 
-            response.getWriter().write(responseJsonObject.toString());
         } else {
             // Login fail
-            JsonObject responseJsonObject = new JsonObject();
             responseJsonObject.addProperty("status", "fail");
+
+            // sample error messages. in practice, it is not a good idea to tell user which one is incorrect/not exist.
             if (!username.equals("anteater")) {
                 responseJsonObject.addProperty("message", "user " + username + " doesn't exist");
-            } else if (!password.equals("123456")) {
+            } else {
                 responseJsonObject.addProperty("message", "incorrect password");
             }
-            response.getWriter().write(responseJsonObject.toString());
         }
+        response.getWriter().write(responseJsonObject.toString());
     }
 }
